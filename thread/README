@@ -1,5 +1,6 @@
 # cchat
-C++ chat a la occhat
+C++ chat a la occhat.  And simpler programs to test the C++
+infrastructure I'm building up.
 
 syn_queue: synchronized queue class
 tSQ: test

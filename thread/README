@@ -1,0 +1,18 @@
+# cchat
+C++ chat a la occhat
+
+syn_queue: synchronized queue class
+tSQ: test
+
+unique_fd: file descriptor handle
+testfh: guess
+
+exc_socket: exception wrappers to several POSIX functions
+
+hello_sock: minimal 'hello' server
+
+echo_*: echo server and client
+
+ccchat*: chat files
+
+readline.cc, readn, writen: mostly taken from UNP

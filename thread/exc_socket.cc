@@ -57,10 +57,12 @@ loop:
         if (EINTR == errno) // interrupted, try again
             goto loop;
         else if (EIO == errno) // filesystem problem
+            // dubious whether I should be throwing out of a cleanup
+            // function.
            throw std::system_error(errno, std::system_category(),
                    "close error: ");
     }
-    // don't throw just for EBADF
+    // don't throw just for EBADF, the only other error.
      //   throw std::system_error(errno, std::system_category());
 }
 
@@ -89,9 +91,9 @@ void Inet_pton(int af, const string& src, void *dst) {
         throw std::logic_error("Inet_pton: invalid address family");
 }
 
-socket_t Tcp_Bind ( int port, int listeners) {
+unique_fd Tcp_Bind ( int port, int listeners) {
 
-    socket_t listenfd = Socket ( AF_INET, SOCK_STREAM, 0);
+    unique_fd listenfd ( Socket ( AF_INET, SOCK_STREAM, 0) );
 
     sockaddr_in servaddr;
     socklen_t address_len = sizeof(servaddr);
@@ -102,12 +104,11 @@ socket_t Tcp_Bind ( int port, int listeners) {
     servaddr.sin_port = htons (port);
 
     try {
-        Bind (listenfd, (sockaddr *) &servaddr, address_len);
-        Listen (listenfd, listeners);
+        Bind (listenfd.get(), (sockaddr *) &servaddr, address_len);
+        Listen (listenfd.get(), listeners);
     }
     catch (...) {
 
-        Close (listenfd);
         throw;
     }
 

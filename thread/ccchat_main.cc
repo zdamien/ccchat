@@ -12,41 +12,36 @@ const string help_string = R"(Usage:
 )";
 
 void client (char* server, int port) {
-    socket_t sock = Tcp_Connect (server, port);
+    unique_fd sock ( Tcp_Connect (server, port) );
     try {
         //chat sock, ...
     }
     catch (...) {
-        Close (sock);
         throw;
     }
-    close (sock);
 
 }
 
 void server (int port) {
     struct sockaddr_in cliaddr;
 
-    socket_t listenfd = Tcp_Bind (port);
+    unique_fd listenfd ( Tcp_Bind (port) );
     try {
         while (true) {
             socklen_t clilen = sizeof (cliaddr);
-            socket_t client_sock = Accept (listenfd, (sockaddr *) &cliaddr, &clilen);
+            unique_fd client_sock ( Accept (listenfd.get(), (sockaddr *)
+                        &cliaddr, &clilen) );
             try {
             // chat
             }
             catch (...) {
-                Close (client_sock);
                 throw;
             }
-            Close (client_sock);
         }
     }
     catch (...) {
-        Close (listenfd);
         throw;
     }
-    Close (listenfd);
 }
 
 int main(int argc, char** argv) {

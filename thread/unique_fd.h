@@ -10,7 +10,7 @@ class unique_fd {
     int fd;
 public:
     int get() { return fd; }
-    unique_fd( int _fd) : fd{_fd} {}
+    explicit unique_fd( int _fd) : fd{_fd} {}
     ~unique_fd() noexcept { 
         if (-1 != fd) {
             int retval;

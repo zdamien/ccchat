@@ -12,6 +12,8 @@
 
 #include <unistd.h>
 #include <string>
+#include "unique_fd.h"
+
 using std::string;
 
 
@@ -27,6 +29,10 @@ void Listen(socket_t socket, int backlog);
 // ^ man page declaration, using C 'restrict' which isn't C++ ^
 socket_t Accept(socket_t socket, struct sockaddr *address, socklen_t *address_len);
 
+inline socket_t Accept(unique_fd socket, struct sockaddr *address, socklen_t
+        *address_len) { return Accept(socket.get(), address,
+            address_len); }
+
 void Connect(socket_t socket, const struct sockaddr *address, socklen_t address_len);
 
 void Close (socket_t socket);
@@ -37,7 +43,7 @@ pid_t Waitpid(pid_t pid, int *stat_loc, int options);
 
 void Inet_pton(int af, const char *src, void *dst);
 
-socket_t Tcp_Bind ( int port, int listeners=20);
+unique_fd Tcp_Bind ( int port, int listeners=20);
 
 socket_t Tcp_Connect ( const string & address_s, int port) ;
 

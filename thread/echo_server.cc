@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         port = atoi (argv[1]);
 
     try {
-        unique_fd listenfd ( Tcp_Bind (port) );
+        unique_fd listenfd = Tcp_Bind (port) ;
 
         while (true) {
             struct sockaddr_in cliaddr;

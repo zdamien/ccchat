@@ -33,6 +33,7 @@ void str_cli (FILE *fp, socket_t sockfd) {
         fputs (from_socket, stdout);
     }
 }
+
 int main(int argc, char** argv) {
     socket_t connfd;
     socklen_t clilen;
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
 
     try {
 
+        // the standard unwrapped code, left for reference
         /*
         connfd = Socket (AF_INET, SOCK_STREAM, 0);
         sockaddr_in servaddr;
@@ -59,6 +61,7 @@ int main(int argc, char** argv) {
         Connect (connfd, (sockaddr *) &servaddr, sizeof(servaddr));
         */
 
+        // much shorter
         connfd = Tcp_Connect (argv[1], port);
 
         str_cli (stdin, connfd);

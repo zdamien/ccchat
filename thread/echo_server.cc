@@ -18,14 +18,13 @@ void str_echo (unique_fd sockfd) {
     char buf[MAXLINE];
 
     while ( (n = recv (sockfd.get(), buf, MAXLINE, 0)) > 0) {
-        send(sockfd.get(), buf, n, 0);
+        // assuming this just works, because it's a dumb echo server nor
+        // worthy of a sendall()
+        send(sockfd.get(), buf, n, 0); 
     }
 }
 
 int main(int argc, char** argv) {
-    socklen_t clilen;
-    pid_t child_pid;
-    struct sockaddr_in cliaddr;
     int port = SERV_PORT;
 
     if (argc == 2)
@@ -35,18 +34,22 @@ int main(int argc, char** argv) {
         unique_fd listenfd ( Tcp_Bind (port) );
 
         while (true) {
-            clilen = sizeof (cliaddr);
+            struct sockaddr_in cliaddr;
+            socklen_t clilen = sizeof (cliaddr);
             unique_fd connfd ( Accept (listenfd.get(), (sockaddr *)
                         &cliaddr, &clilen));
 
+            // double fork daemon idiom
+            pid_t child_pid=-1;
             if ( (child_pid = Fork()) == 0) {
                 if ( (child_pid = Fork()) == 0) {
-                    listenfd.~unique_fd();  // close handle
+                    listenfd.~unique_fd();  // close listener handle
                     str_echo (move(connfd));
                     exit(0);
                 } else 
                     exit(0);
             }
+            // wait for the short-lived intermediate child
             Waitpid(child_pid, nullptr, 0);
         }
     }
